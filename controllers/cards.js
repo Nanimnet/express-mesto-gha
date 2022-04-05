@@ -7,15 +7,16 @@ const INTERNAL_SERVER_ERROR_CODE = 500;
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ cards }))
-    .catch(() => res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Ошибка' }));
 };
+
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(201).send({ card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST_CODE).send({ message: 'Переданы некорректные данные' });
+        res.status(BAD_REQUEST_CODE).send({ message: 'Данные не верны' });
       } else {
         res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' });
       }

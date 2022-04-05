@@ -7,23 +7,20 @@ const INTERNAL_SERVER_ERROR_CODE = 500;
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.send({
-      name: user.name,
-      about: user.about,
-      avatar: user.avatar,
-      _id: user._id,
-    }))
-    .catch(
-      (err) => {
-        res.status(400).send({ message: err.message });
-      },
-    );
+    .then((user) => res.status(201).send({ user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST_CODE).send({ message: 'Переданы некорректные данные' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Ошибка' });
+      }
+    });
 };
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ users }))
-    .catch(() => res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Ошибка' }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -39,7 +36,7 @@ module.exports.getUserById = (req, res) => {
     if (err.name === 'CastError') {
       res.status(BAD_REQUEST_CODE).send({message: 'Переданы некорректные данные'})
     } else {
-      req.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' })
+      req.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Ошибка' })
     }
   });
 }
@@ -58,7 +55,7 @@ module.exports.updateUserInfo = (req, res) => {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       res.status(BAD_REQUEST_CODE).send({ message: 'Переданы некорректные данные' });
     } else {
-      res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' });
+      res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Ошибка' });
     }
   })
 }
@@ -77,7 +74,7 @@ module.exports.updateAvatar = (req, res) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(BAD_REQUEST_CODE).send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' });
+        res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Ошибка' });
       }
     });
 };
