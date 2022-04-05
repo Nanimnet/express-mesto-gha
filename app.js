@@ -26,11 +26,11 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post('/users', require('./routes/users'));
+app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.get("/", (req, res) => {
-  res.status(200).send({ hello: "world!" });
+app.use((req, res) => {
+  res.status(404).send({ message: 'Запрашиваемая страница не найдена' });
 });
 
 app.listen(PORT, () => {
