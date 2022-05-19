@@ -18,7 +18,9 @@ module.exports.createCard = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST_CODE).send({ message: 'Данные не верны' });
       } else {
-        res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' });
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -34,15 +36,23 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST_CODE).send({ message: 'Переданы некорректные данные' });
+        res
+          .status(BAD_REQUEST_CODE)
+          .send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' });
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: 'Произошла ошибка' });
       }
     });
 };
 
 module.exports.likeCard = (req, res) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  )
     .then((card) => {
       if (card) {
         res.send({ card });
@@ -52,15 +62,23 @@ module.exports.likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(BAD_REQUEST_CODE).send({ message: 'Переданы некорректные данные' });
+        res
+          .status(BAD_REQUEST_CODE)
+          .send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' });
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: 'Произошла ошибка' });
       }
     });
 };
 
 module.exports.dislikeCard = (req, res) => {
-  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } },
+    { new: true },
+  )
     .then((card) => {
       if (card) {
         res.send({ card });
@@ -70,9 +88,13 @@ module.exports.dislikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(BAD_REQUEST_CODE).send({ message: 'Переданы некорректные данные' });
+        res
+          .status(BAD_REQUEST_CODE)
+          .send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(INTERNAL_SERVER_ERROR_CODE).send({ message: 'Произошла ошибка' });
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: 'Произошла ошибка' });
       }
     });
 };
