@@ -1,12 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
+
+const userRouter = require('./routes/users');
+const cardRouter = require('./routes/cards');
+const { login, createUser } = require('./controllers/users');
+const { signupValidation, signinValidation } = require('./middlewares/validation');
+const auth = require('./middlewares/auth');
+
+const NotFoundErr = require('./errors/NotFoundErr');
 
 const app = express();
 const { PORT = 3000 } = process.env;
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect(
   'mongodb://localhost:27017/mestodb',
@@ -22,20 +27,21 @@ mongoose.connect(
   },
 );
 
+app.use(express.json());
+
+app.post('/signin', signinValidation, login);
+app.post('/signup', signupValidation, createUser);
+
+app.use(auth);
+
+app.use(userRouter);
+app.use(cardRouter);
+
 app.use((req, res, next) => {
-  req.user = {
-    _id: '624c90ad6940783c840f4971',
-  };
-
-  next();
+  next(new NotFoundErr('Запрашиваемая страница не найдена'));
 });
 
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
-
-app.use((req, res) => {
-  res.status(404).send({ message: 'Запрашиваемая страница не найдена' });
-});
+app.use(errors());
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
