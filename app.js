@@ -32,7 +32,7 @@ app.use((req, res, next) => {
 
 app.use(errors());
 
-// app.use(errorsHandler);
+app.use(errorsHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
