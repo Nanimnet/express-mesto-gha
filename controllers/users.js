@@ -27,6 +27,7 @@ module.exports.createUser = (req, res, next) => {
       } else if (err.code === 11000) {
         next(new ConflictErr('E-mail уже используется у другого пользователя'));
       }
+      return next(err);
     });
 };
 

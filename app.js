@@ -21,7 +21,7 @@ app.use(express.json());
 app.post('/signin', signinValidation, login);
 app.post('/signup', signupValidation, createUser);
 
-app.use(auth);
+// app.use(auth);
 
 app.use(userRouter);
 app.use(cardRouter);
