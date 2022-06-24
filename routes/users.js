@@ -10,10 +10,10 @@ const {
   getCurrentUser,
 } = require('../controllers/users');
 
-users.get('/:userId', userIdValidation, getUserById);
-users.get('/', getUsers);
-users.get('/me', getCurrentUser);
-users.patch('/me', userInfoValidation, updateUserInfo);
-users.patch('/me/avatar', userAvatarValidation, updateAvatar);
+users.get('/users/:userId', userIdValidation, getUserById);
+users.get('/users', getUsers);
+users.get('/users/me', getCurrentUser);
+users.patch('/users/me', userInfoValidation, updateUserInfo);
+users.patch('/users/me/avatar', userAvatarValidation, updateAvatar);
 
 module.exports = users;
