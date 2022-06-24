@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 
 const userRouter = require('./routes/users');
@@ -16,18 +17,14 @@ const NotFoundErr = require('./errors/NotFoundErr');
 const app = express();
 const { PORT = 3000 } = process.env;
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-  useUnifiedTopology: true,
-});
+mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use(cookieParser());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.json());
+app.use(helmet());
 
 app.post('/signin', signinValidation, login);
 app.post('/signup', signupValidation, createUser);
