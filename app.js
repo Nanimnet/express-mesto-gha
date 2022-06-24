@@ -7,6 +7,7 @@ const cardRouter = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const { signupValidation, signinValidation } = require('./middlewares/validation');
 const auth = require('./middlewares/auth');
+const errorsHandler = require('./middlewares/errors');
 
 const NotFoundErr = require('./errors/NotFoundErr');
 
@@ -30,6 +31,8 @@ app.use((req, res, next) => {
 });
 
 app.use(errors());
+
+app.use(errorsHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

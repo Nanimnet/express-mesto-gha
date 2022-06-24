@@ -20,7 +20,7 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => res
-      .send({ data: { _id: user._id, email: user.email } }))
+      .send({ data: { _id: user._id, avatar: user.avatar, email: user.email } }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestErr('Почта или пароль не верны'));
