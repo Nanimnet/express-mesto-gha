@@ -13,19 +13,7 @@ const NotFoundErr = require('./errors/NotFoundErr');
 const app = express();
 const { PORT = 3000 } = process.env;
 
-mongoose.connect(
-  'mongodb://localhost:27017/mestodb',
-  {
-    useNewUrlParser: true,
-  },
-  (err) => {
-    if (err) {
-      console.error('Нет соединения с mongodb', err);
-    } else {
-      console.log('Подключено к mongodb');
-    }
-  },
-);
+mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use(express.json());
 
