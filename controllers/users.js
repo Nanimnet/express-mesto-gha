@@ -7,6 +7,7 @@ const BadRequestErr = require('../errors/BadRequestErr');
 const AuthorizationErr = require('../errors/AuthorizationErr');
 const NotFoundErr = require('../errors/NotFoundErr');
 const ConflictErr = require('../errors/ConflictErr');
+const InternalServerErr = require('../errors/InternalServerErr');
 
 // создание пользователя
 module.exports.createUser = (req, res, next) => {
@@ -20,7 +21,16 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => res
-      .send({ data: { _id: user._id, avatar: user.avatar, email: user.email } }))
+      .status(201)
+      .send({
+        data: {
+          _id: user._id,
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+        },
+      }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestErr('Почта или пароль не верны'));
@@ -38,9 +48,22 @@ module.exports.login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      res.send({ token });
+      const data = {
+        _id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      };
+      res.status(200).send({ data, token });
     })
-    .catch(() => next(new AuthorizationErr('Почта или пароль не верны')));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new AuthorizationErr(err.message));
+      } else {
+        next(new InternalServerErr('Ошибка по умолчанию'));
+      }
+    });
 };
 
 // все пользователи
@@ -116,12 +139,12 @@ module.exports.updateAvatar = (req, res, next) => {
 
 // получение текущего пользователя
 module.exports.getCurrentUser = (req, res, next) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
+  User.findById(req.user._id)
+    .then((data) => {
+      if (!data) {
         throw new NotFoundErr('Пользователь не найден');
       }
-      res.send({ user });
+      res.send(data);
     })
     .catch((err) => {
       if (err.name === 'CastError') {

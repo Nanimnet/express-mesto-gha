@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,7 +11,8 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (value) => validator.isURL(value),
+      validator: (v) => /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)/u.test(v),
+      message: 'Некорректная ссылка',
     },
   },
   owner: {
@@ -22,12 +22,10 @@ const cardSchema = new mongoose.Schema({
   },
   likes: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }],
-    required: true,
     default: [],
   },
   createdAt: {
     type: Date,
-    required: true,
     default: Date.now(),
   },
 });

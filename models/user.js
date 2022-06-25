@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
 const bcrypt = require('bcryptjs');
-const isURL = require('validator/lib/isURL');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -20,8 +19,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
-      validator: (v) => isURL(v),
-      message: 'Введена некорректная ссылка',
+      validator: (v) => /^https?:\/\/[www.]?[a-z0-9\D]{1,}\.[ru|net][a-z\D]{0,}#?/gi.test(v),
+      message: 'Некорректная ссылка',
     },
   },
   email: {
@@ -40,7 +39,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// eslint-disable-next-line func-names
 userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {

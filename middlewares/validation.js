@@ -1,5 +1,13 @@
 const { celebrate, Joi } = require('celebrate');
-const validator = require('validator/lib/isURL');
+
+const validateUrl = (value, helpers) => {
+  const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)/;
+
+  if (!regex.test(value)) {
+    return helpers.error('Ссылка не валидна');
+  }
+  return value;
+};
 
 module.exports.userIdValidation = celebrate({
   params: Joi
@@ -14,34 +22,21 @@ module.exports.userInfoValidation = celebrate({
     .object()
     .keys({
       name: Joi.string().required().min(2).max(30),
-      about: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30).required(),
     }),
 });
 
 module.exports.userAvatarValidation = celebrate({
-  body: Joi
-    .object()
-    .keys({
-      avatar: Joi.string().required()
-        .custom((value, helpers) => {
-          if (validator.isURL(value, { require_protocol: true, disallow_auth: true })) {
-            return value;
-          }
-          return helpers.message('Неправильный формат ссылки');
-        }),
-    }),
+  body: Joi.object().keys({
+    avatar: Joi.string().required().custom(validateUrl),
+  }),
 });
 
 module.exports.signupValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().custom((value, helpers) => {
-      if (validator.isURL(value, { require_protocol: true, disallow_auth: true })) {
-        return value;
-      }
-      return helpers.message('Неправильный формат ссылки');
-    }),
+    avatar: Joi.string().custom(validateUrl),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
@@ -59,12 +54,12 @@ module.exports.signinValidation = celebrate({
 module.exports.cardValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().required()
-      .custom((value, helpers) => {
-        if (validator.isURL(value, { require_protocol: true, disallow_auth: true })) {
-          return value;
-        }
-        return helpers.message('Неправильный формат ссылки');
-      }),
+    link: Joi.string().required().custom(validateUrl),
+  }),
+});
+
+module.exports.idValidation = (nameId) => celebrate({
+  params: Joi.object().keys({
+    [nameId]: Joi.string().min(2).max(30).required(),
   }),
 });
