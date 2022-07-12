@@ -4,10 +4,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const BadRequestErr = require('../errors/BadRequestErr');
-const AuthorizationErr = require('../errors/AuthorizationErr');
 const NotFoundErr = require('../errors/NotFoundErr');
 const ConflictErr = require('../errors/ConflictErr');
-const InternalServerErr = require('../errors/InternalServerErr');
 
 // создание пользователя
 module.exports.createUser = (req, res, next) => {
@@ -59,9 +57,9 @@ module.exports.login = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new AuthorizationErr(err.message));
+        next(new BadRequestErr(err.message));
       } else {
-        next(new InternalServerErr('Ошибка по умолчанию'));
+        next(err);
       }
     });
 };
