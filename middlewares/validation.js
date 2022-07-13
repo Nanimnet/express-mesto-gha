@@ -58,8 +58,8 @@ module.exports.cardValidation = celebrate({
   }),
 });
 
-module.exports.idValidation = celebrate({
+module.exports.idValidation = (nameId) => celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().min(2).max(30).required(),
+    [nameId]: Joi.string().hex().max(24).required(),
   }),
 });
